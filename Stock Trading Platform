@@ -1,0 +1,123 @@
+import java.util.HashMap;
+import java.util.Scanner;
+
+class Stock {
+    String name;
+    double price;
+
+    public Stock(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+}
+
+class Portfolio {
+    HashMap<String, Integer> stocks = new HashMap<>();
+    double cash;
+
+    public Portfolio(double initialCash) {
+        this.cash = initialCash;
+    }
+
+    public void buyStock(String stockName, int shares, double price) {
+        if (cash >= price * shares) {
+            stocks.put(stockName, stocks.getOrDefault(stockName, 0) + shares);
+            cash -= price * shares;
+            System.out.println("Bought " + shares + " shares of " + stockName);
+        } else {
+            System.out.println("Insufficient funds to buy " + shares + " shares of " + stockName);
+        }
+    }
+
+    public void sellStock(String stockName, int shares, double price) {
+        if (stocks.getOrDefault(stockName, 0) >= shares) {
+            stocks.put(stockName, stocks.get(stockName) - shares);
+            cash += price * shares;
+            System.out.println("Sold " + shares + " shares of " + stockName);
+        } else {
+            System.out.println("Insufficient shares to sell");
+        }
+    }
+
+    public void displayPortfolio() {
+        System.out.println("Current Portfolio:");
+        for (String stock : stocks.keySet()) {
+            System.out.println(stock + ": " + stocks.get(stock) + " shares");
+        }
+        System.out.println("Cash: $" + cash);
+    }
+}
+
+public class StockTradingPlatform {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Initialize market data
+        Stock stock1 = new Stock("Stock1", 100);
+        Stock stock2 = new Stock("Stock2", 150);
+        HashMap<String, Stock> marketData = new HashMap<>();
+        marketData.put(stock1.name, stock1);
+        marketData.put(stock2.name, stock2);
+
+        // Initialize portfolio
+        Portfolio portfolio = new Portfolio(10000);
+
+        while (true) {
+            System.out.println("\nSimulated Stock Trading Platform");
+            System.out.println("1. View Market Data");
+            System.out.println("2. Buy Stock");
+            System.out.println("3. Sell Stock");
+            System.out.println("4. View Portfolio");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    // View market data
+                    System.out.println("Market Data:");
+                    for (String stockName : marketData.keySet()) {
+                        Stock stock = marketData.get(stockName);
+                        System.out.println(stock.name + ": $" + stock.price);
+                    }
+                    break;
+                case 2:
+                    // Buy stock
+                    System.out.print("Enter stock name: ");
+                    String buyStockName = scanner.next();
+                    if (marketData.containsKey(buyStockName)) {
+                        System.out.print("Enter number of shares to buy: ");
+                        int buyShares = scanner.nextInt();
+                        portfolio.buyStock(buyStockName, buyShares, marketData.get(buyStockName).price);
+                    } else {
+                        System.out.println("Invalid stock name");
+                    }
+                    break;
+                case 3:
+                    // Sell stock
+                    System.out.print("Enter stock name: ");
+                    String sellStockName = scanner.next();
+                    if (marketData.containsKey(sellStockName)) {
+                        System.out.print("Enter number of shares to sell: ");
+                        int sellShares = scanner.nextInt();
+                        portfolio.sellStock(sellStockName, sellShares, marketData.get(sellStockName).price);
+                    } else {
+                        System.out.println("Invalid stock name");
+                    }
+                    break;
+                case 4:
+                    // View portfolio
+                    portfolio.displayPortfolio();
+                    break;
+                case 5:
+                    // Exit
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+                    break;
+            }
+        }
+    }
+}
